@@ -508,3 +508,12 @@ Stack trace:
 REQUEST_URI=/site/getdata
 HTTP_REFERER=http://roketa-vacancy.local/
 ---
+2016/01/06 13:31:30 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "favicon.ico".' in E:\projects\frameworks\yii\framework\web\CWebApplication.php:286
+Stack trace:
+#0 E:\projects\frameworks\yii\framework\web\CWebApplication.php(141): CWebApplication->runController('favicon.ico')
+#1 E:\projects\frameworks\yii\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 E:\projects\frameworks\roketa_project\index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/favicon.ico
+HTTP_REFERER=http://roketa-vacancy.local/
+---

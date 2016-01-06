@@ -37,15 +37,17 @@ class SiteController extends Controller
                 ->from('purchases')
                 ->queryRow();
 
-        $data = self::actionGetData();
+        //$data = self::actionGetData();
 
-		$this->render('index',array('data'=>$data));
+		$this->render('index'
+//            ,array('data'=>$data)
+        );
 	}
 
     /**
      * @return mixed
      */
-    public function actionGetData() {
+    public function actionGetData($limited = true) {
 
         $page_rows = 20;
         $page_days = 7;
@@ -82,13 +84,20 @@ class SiteController extends Controller
 
 //        echo $date_begin->format('d.m.Y')."<br>";
 //        echo $date_end->format('d.m.Y')."<br>";
-
         $offset_begin = clone($date_begin);
-        $offset_begin = $offset_begin->add($interv);
-        $offset_end = clone($offset_begin);
+        $offset_end = null;
+        if($limited) {
+
+            $offset_begin = $offset_begin->add($interv);
+            $offset_end = clone($offset_begin);
 //        $offset_begin = $offset_begin->getTimestamp();
-        $interv = new DateInterval("P".$page_days."D");
-        $offset_end = $offset_end->add($interv);
+            $interv = new DateInterval("P" . $page_days . "D");
+            $offset_end = $offset_end->add($interv);
+        }
+        else
+        {
+            $offset_end = clone($date_end);
+        }
 
 //        echo $date_begin->format('d.m.Y')."<br>";
 //        echo $date_end->format('d.m.Y')."<br>";
@@ -105,11 +114,13 @@ class SiteController extends Controller
         $model = Yii::app()->db->createCommand()
             ->select("pm_id,price")
             ->from('purchases')
-            ->offset($voffset)
-            ->limit($page_rows)
             ->group('pm_id, price')
-            ->where("ts_day_start >=".$date_begin->getTimestamp()." AND ts_day_start <= ".$date_end->getTimestamp())
-            ->queryAll();
+            ->where("ts_day_start >=".$date_begin->getTimestamp()." AND ts_day_start <= ".$date_end->getTimestamp());
+
+        if($limited)
+            $model->offset($voffset)->limit($page_rows);
+
+        $model = $model->queryAll();
 
         $pairs = $model;
 
@@ -252,66 +263,5 @@ class SiteController extends Controller
 			else
 				$this->render('error', $error);
 		}
-	}
-
-	/**
-	 * Displays the contact page
-	 */
-	public function actionContact()
-	{
-		$model=new ContactForm;
-		if(isset($_POST['ContactForm']))
-		{
-			$model->attributes=$_POST['ContactForm'];
-			if($model->validate())
-			{
-				$name='=?UTF-8?B?'.base64_encode($model->name).'?=';
-				$subject='=?UTF-8?B?'.base64_encode($model->subject).'?=';
-				$headers="From: $name <{$model->email}>\r\n".
-					"Reply-To: {$model->email}\r\n".
-					"MIME-Version: 1.0\r\n".
-					"Content-Type: text/plain; charset=UTF-8";
-
-				mail(Yii::app()->params['adminEmail'],$subject,$model->body,$headers);
-				Yii::app()->user->setFlash('contact','Thank you for contacting us. We will respond to you as soon as possible.');
-				$this->refresh();
-			}
-		}
-		$this->render('contact',array('model'=>$model));
-	}
-
-	/**
-	 * Displays the login page
-	 */
-	public function actionLogin()
-	{
-		$model=new LoginForm;
-
-		// if it is ajax validation request
-		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
-
-		// collect user input data
-		if(isset($_POST['LoginForm']))
-		{
-			$model->attributes=$_POST['LoginForm'];
-			// validate user input and redirect to the previous page if valid
-			if($model->validate() && $model->login())
-				$this->redirect(Yii::app()->user->returnUrl);
-		}
-		// display the login form
-		$this->render('login',array('model'=>$model));
-	}
-
-	/**
-	 * Logs out the current user and redirect to homepage.
-	 */
-	public function actionLogout()
-	{
-		Yii::app()->user->logout();
-		$this->redirect(Yii::app()->homeUrl);
 	}
 }

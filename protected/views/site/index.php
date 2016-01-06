@@ -19,11 +19,18 @@ $this->pageTitle=Yii::app()->name;
 <!--should you have any questions.</p>-->
 
 <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>assets/bootstrap-datepicker/css/bootstrap-datepicker.min.css">
+<script src="<?php echo Yii::app()->request->baseUrl; ?>assets/bootstrap/js/bootstrap.min.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>assets/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>js/main.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>assets/bootstrap-datepicker/locales/bootstrap-datepicker.ru.min.js"></script>
 <div class="row">
     <h1>Запросить данные</h1>
+
+    <div class="input-group input-daterange">
+        <input type="text" class="form-control" id="start_date" value="1.11.2015">
+        <span class="input-group-addon">to</span>
+        <input type="text" class="form-control" id="end_date" value="1.01.2016">
+    </div>
 
     <table id="request_form">
         <tbody>
@@ -65,7 +72,7 @@ $this->pageTitle=Yii::app()->name;
         </tr>
         <tr>
             <td><button id="prev_date" class="btn btn-success disabled" disabled="disabled">Предыдущие даты</button></td>
-            <td><button id="next_date" class="btn btn-info">Следующие даты</button></td>
+            <td><button id="next_date" class="btn btn-info disabled" disabled="disabled">Следующие даты</button></td>
         </tr>
         <tr>
             <td>
@@ -79,7 +86,7 @@ $this->pageTitle=Yii::app()->name;
         </tr>
         <tr>
             <td><button id="prev_pm" class="btn btn-success disabled" disabled="disabled">Предыдущие товары</button></td>
-            <td><button id="next_pm" class="btn btn-info">Следующие товары</button></td>
+            <td><button id="next_pm" class="btn btn-info disabled" disabled="disabled">Следующие товары</button></td>
         </tr>
         <tr>
             <td>
@@ -91,12 +98,6 @@ $this->pageTitle=Yii::app()->name;
         </tr>
         </tbody>
     </table>
-</div>
-
-<div class="input-group input-daterange">
-    <input type="text" class="form-control" id="start_date" value="1.11.2015">
-    <span class="input-group-addon">to</span>
-    <input type="text" class="form-control" id="end_date" value="1.01.2016">
 </div>
 
 <!--<pre>-->
@@ -129,7 +130,9 @@ $this->pageTitle=Yii::app()->name;
 <!--        </tbody>-->
 <!--    </table>-->
 </div>
+<div id="dummy-modal">
 
+</div>
 <script>
     var vpage = 1;
     var hpage = 1;

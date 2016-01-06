@@ -59,6 +59,12 @@ $(function(){
             $('#prev_pm').attr('disabled', 'disabled');
             $('#prev_pm').addClass('disabled');
         }
+
+        if(current_cond.vpage < current_cond.pages) {
+            $('#next_pm').removeAttr('disabled');
+            $('#next_pm').removeClass('disabled');
+        }
+
         send_request(false);
     });
     $('#next_pm').on('click',function(){
@@ -66,6 +72,11 @@ $(function(){
         if(current_cond.vpage != 0) {
             $('#prev_pm').removeAttr('disabled');
             $('#prev_pm').removeClass('disabled');
+        }
+
+        if(current_cond.vpage == (current_cond.pages-1)) {
+            $('#next_pm').attr('disabled', 'disabled');
+            $('#next_pm').addClass('disabled');
         }
         send_request(false);
     });
@@ -77,6 +88,7 @@ $(function(){
 });
 
 function send_request(is_new_request){
+    $('#dummy-modal').modal('show');
     new_cond.date_begin = $("#start_date").val();
     var date = new_cond.date_begin.split('.');
     date = new Date(date[2],(date[1]-1),date[0]);
@@ -95,7 +107,7 @@ function send_request(is_new_request){
         hoffset: date_obj.hpage
     })
         .done(function(){
-
+            $('#dummy-modal').modal('hide');
         })
         .success(function(response){
             response = JSON.parse(response);
@@ -112,6 +124,18 @@ function send_request(is_new_request){
                 periods_count = parseInt(diffDays/7)+1;
 
                 //alert(periods_count);
+                if(periods_count == 1)
+                {
+                    $('#prev_date').attr('disabled', 'disabled');
+                    $('#prev_date').addClass('disabled');
+                    $('#next_date').attr('disabled', 'disabled');
+                    $('#next_date').addClass('disabled');
+                }
+
+                else{
+                    $('#next_date').removeAttr('disabled');
+                    $('#next_date').removeClass('disabled');
+                }
 
                 $('#datepages select').on('change',function(){
                     current_cond.hpage = this.value;
@@ -136,6 +160,8 @@ function send_request(is_new_request){
                         $('#next_date').addClass('disabled');
                     }
                 });
+
+                $('#datepages select').html('');
 
                 for(var i = 0; i < periods_count; i++){
                     date1 = new Date(date_obj.date_begin.getTime());
@@ -167,6 +193,20 @@ function send_request(is_new_request){
 
                 var pages = Math.ceil(response.data.total/20);
 
+                current_cond.pages = pages;
+
+                if(pages == 1){
+                    $('#prev_pm').attr('disabled', 'disabled');
+                    $('#prev_pm').addClass('disabled');
+                    $('#next_pm').attr('disabled', 'disabled');
+                    $('#next_pm').addClass('disabled');
+                }
+                else
+                {
+                    $('#next_pm').removeAttr('disabled');
+                    $('#next_pm').removeClass('disabled');
+                }
+
                 $('#pmpages').html('');
 
                 for(var i = 0; i < pages; i++){
@@ -178,6 +218,26 @@ function send_request(is_new_request){
                     new_link.on('click',function(){
                         current_cond.vpage = $(this).attr('data-page');
                         send_request(false);
+
+                        if(current_cond.vpage == 0) {
+                            $('#prev_pm').attr('disabled', 'disabled');
+                            $('#prev_pm').addClass('disabled');
+                        }
+
+                        if(current_cond.vpage < current_cond.pages) {
+                            $('#next_pm').removeAttr('disabled');
+                            $('#next_pm').removeClass('disabled');
+                        }
+
+                        if(current_cond.vpage != 0) {
+                            $('#prev_pm').removeAttr('disabled');
+                            $('#prev_pm').removeClass('disabled');
+                        }
+
+                        if(current_cond.vpage == (current_cond.pages-1)) {
+                            $('#next_pm').attr('disabled', 'disabled');
+                            $('#next_pm').addClass('disabled');
+                        }
                     });
                     $('#pmpages').append(new_link);
                 }
