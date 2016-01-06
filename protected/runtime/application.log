@@ -517,3 +517,37 @@ Stack trace:
 REQUEST_URI=/favicon.ico
 HTTP_REFERER=http://roketa-vacancy.local/
 ---
+2016/01/06 16:57:43 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "generateFile".' in E:\projects\frameworks\yii\framework\web\CWebApplication.php:286
+Stack trace:
+#0 E:\projects\frameworks\yii\framework\web\CWebApplication.php(141): CWebApplication->runController('generateFile')
+#1 E:\projects\frameworks\yii\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#2 E:\projects\frameworks\roketa_project\index.php(13): CApplication->run()
+#3 {main}
+REQUEST_URI=/generateFile
+---
+2016/01/06 16:59:25 [error] [exception.Exception] exception 'Exception' with message 'DateTime::__construct(): Failed to parse time string (1452088765) at position 7 (7): Unexpected character' in E:\projects\frameworks\roketa_project\protected\controllers\SiteController.php:86
+Stack trace:
+#0 E:\projects\frameworks\roketa_project\protected\controllers\SiteController.php(86): DateTime->__construct('1452088765')
+#1 E:\projects\frameworks\roketa_project\protected\controllers\SiteController.php(237): SiteController->actionGetData(false, 0, 1452088765)
+#2 E:\projects\frameworks\yii\framework\web\actions\CInlineAction.php(49): SiteController->actionGenerateFile()
+#3 E:\projects\frameworks\yii\framework\web\CController.php(308): CInlineAction->runWithParams(Array)
+#4 E:\projects\frameworks\yii\framework\web\CController.php(286): CController->runAction(Object(CInlineAction))
+#5 E:\projects\frameworks\yii\framework\web\CController.php(265): CController->runActionWithFilters(Object(CInlineAction), Array)
+#6 E:\projects\frameworks\yii\framework\web\CWebApplication.php(282): CController->run('generateFile')
+#7 E:\projects\frameworks\yii\framework\web\CWebApplication.php(141): CWebApplication->runController('site/generateFi...')
+#8 E:\projects\frameworks\yii\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#9 E:\projects\frameworks\roketa_project\index.php(13): CApplication->run()
+#10 {main}
+REQUEST_URI=/site/generateFile
+---
+2016/01/06 17:50:12 [error] [php] Invalid argument supplied for foreach() (E:\projects\frameworks\roketa_project\protected\controllers\SiteController.php:253)
+Stack trace:
+#0 E:\projects\frameworks\yii\framework\web\CController.php(286): SiteController->runAction()
+#1 E:\projects\frameworks\yii\framework\web\CController.php(265): SiteController->runActionWithFilters()
+#2 E:\projects\frameworks\yii\framework\web\CWebApplication.php(282): SiteController->run()
+#3 E:\projects\frameworks\yii\framework\web\CWebApplication.php(141): CWebApplication->runController()
+#4 E:\projects\frameworks\yii\framework\base\CApplication.php(184): CWebApplication->processRequest()
+#5 E:\projects\frameworks\roketa_project\index.php(13): CWebApplication->run()
+REQUEST_URI=/site/generateFile?date_begin=2015-11-1
+in E:\projects\frameworks\roketa_project\protected\controllers\SiteController.php (253)
+in E:\projects\frameworks\roketa_project\index.php (13)

@@ -28,7 +28,7 @@ $this->pageTitle=Yii::app()->name;
 
     <div class="input-group input-daterange">
         <input type="text" class="form-control" id="start_date" value="1.11.2015">
-        <span class="input-group-addon">to</span>
+        <span class="input-group-addon">-</span>
         <input type="text" class="form-control" id="end_date" value="1.01.2016">
     </div>
 
@@ -68,7 +68,7 @@ $this->pageTitle=Yii::app()->name;
 <!--        </tr>-->
         <tr>
             <td><button id="request_data" class="btn btn-success">Запросить данные</button></td>
-            <td><button id="downlad_data" class="btn btn-info">Скачать отчет</button></td>
+            <td id="download_data"><a href="#"><button class="btn btn-info disabled" disabled>Скачать отчет</button></a></td>
         </tr>
         <tr>
             <td><button id="prev_date" class="btn btn-success disabled" disabled="disabled">Предыдущие даты</button></td>

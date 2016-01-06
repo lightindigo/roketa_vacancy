@@ -124,6 +124,9 @@ function send_request(is_new_request){
 
             if(is_new_request) {
 
+                $('#download_data button').removeClass('disabled');
+                $('#download_data button').removeAttr('disabled');
+                $('#download_data a').attr('href','/site/generateFile?date_begin='+encodeURI(date_obj.date_begin.getFullYear()+"-"+(date_obj.date_begin.getMonth()+1)+"-"+date_obj.date_begin.getDate())+'&date_end='+encodeURI(date_obj.date_end.getFullYear()+"-"+(date_obj.date_end.getMonth()+1)+"-"+date_obj.date_end.getDate()));
                 periods = [];
 
                 var timeDiff = Math.abs(date_obj.date_end.getTime() - date_obj.date_begin.getTime());

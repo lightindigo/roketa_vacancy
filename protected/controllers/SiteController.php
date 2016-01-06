@@ -47,13 +47,16 @@ class SiteController extends Controller
     /**
      * @return mixed
      */
-    public function actionGetData($limited = true) {
+    public function actionGetData($limited = true,$date_begin = null, $date_end = null) {
 
         $page_rows = 20;
         $page_days = 7;
 
-        $date_begin = Yii::app()->request->getPost('date_begin') == NULL ? 0 : Yii::app()->request->getPost('date_begin') ;
-        $date_end = Yii::app()->request->getPost('date_end') == NULL ? date('Y-m-d') : Yii::app()->request->getPost('date_end');
+        if($date_begin == null)
+            $date_begin = Yii::app()->request->getPost('date_begin') == NULL ? date('Y-m-d',0) : Yii::app()->request->getPost('date_begin') ;
+        if($date_end == null)
+            $date_end = Yii::app()->request->getPost('date_end') == NULL ? date('Y-m-d') : Yii::app()->request->getPost('date_end');
+
         $hoffset = Yii::app()->request->getPost('hoffset') == NULL ? 0 : Yii::app()->request->getPost('hoffset');
         $voffset = Yii::app()->request->getPost('voffset') == NULL ? 0 : Yii::app()->request->getPost('voffset');
 
@@ -75,22 +78,17 @@ class SiteController extends Controller
 
         $voffset = $voffset * $page_rows;
 
-        if($date_begin == 0)
-            $date_begin = date('Y-m-d',$date_begin);
-
         $interv = new DateInterval("P".($hoffset*$page_days)."D");
         $date_begin = $date_begin != 0 ? new DateTime($date_begin) : DateTime::createFromFormat('Y-m-d', $date_begin);
         $date_end = $date_end != 0 ? new DateTime($date_end) : DateTime::createFromFormat('Y-m-d', $date_end);
 
-//        echo $date_begin->format('d.m.Y')."<br>";
-//        echo $date_end->format('d.m.Y')."<br>";
+
         $offset_begin = clone($date_begin);
         $offset_end = null;
-        if($limited) {
 
+        if($limited) {
             $offset_begin = $offset_begin->add($interv);
             $offset_end = clone($offset_begin);
-//        $offset_begin = $offset_begin->getTimestamp();
             $interv = new DateInterval("P" . $page_days . "D");
             $offset_end = $offset_end->add($interv);
         }
@@ -99,14 +97,11 @@ class SiteController extends Controller
             $offset_end = clone($date_end);
         }
 
-//        echo $date_begin->format('d.m.Y')."<br>";
-//        echo $date_end->format('d.m.Y')."<br>";
 
         $model = Yii::app()->db->createCommand()
             ->select("pm_id,price")
             ->from('purchases')
             ->group('pm_id, price')
-//            ->where("ts_day_start >=".$offset_begin." AND ts_day_start <= ".$offset_end);
             ->where("ts_day_start >=".$date_begin->getTimestamp()." AND ts_day_start <= ".$date_end->getTimestamp());
 
         $sql = $model->text;
@@ -134,21 +129,16 @@ class SiteController extends Controller
 
         $model = Yii::app()
             ->db
-//            ->createCommand("select count(*) as total FROM ( SELECT pm_id,price FROM purchases WHERE (ts_day_start>=".$date_begin->getTimestamp().") AND (ts_day_start <= ".$date_end->getTimestamp().") GROUP BY pm_id,price ) as tab");
-            ->createCommand("select count(*) as total FROM ($sql) as tab")->queryRow();
-//            $total = $model->text;
-//            ->queryRow();
+            ->createCommand("select count(*) as total FROM ($sql) as tab")
+            ->queryRow();
         $total = $model['total'];
 
 
         $model = Yii::app()->db->createCommand()
             ->select("pm_id,price,date_format(from_unixtime(ts_day_start),'%d.%m.%Y') as date,SUM(a_count*price) as income")
             ->from('purchases')
-            //->limit($page_rows)
             ->group('pm_id, price, ts_day_start')
             ->where("((pm_id BETWEEN $min_pm AND $max_pm) OR (pm_id = $max_pm AND price <= $max_price)) AND ts_day_start >=".$offset_begin->getTimestamp()." AND ts_day_start <= ".$offset_end->getTimestamp());
-
-//        var_dump($model->text);
 
         $model = $model->queryAll();
 
@@ -172,26 +162,29 @@ class SiteController extends Controller
             $reconf_array[$record['pm_id']][$record['price']][$record['date']] = $record['income'];
         }
 
-        if(Yii::app()->request->isAjaxRequest){
-            self::ajaxResponse('ok','',
-                array(
-                    'result' => $reconf_array,
+        $data = array(
+            'result' => $reconf_array,
 //                    'test_dates' => array(
 //                        'offset_begin' => $offset_begin->format('d.m.Y'),
 //                        'offset_end' => $offset_end->format('d.m.Y'),
 //                        'date_begin' => $date_begin->format('d.m.Y'),
 //                        'date_end' => $date_end->format('d.m.Y'),
 //                    ),
-                    'offset_begin' => $offset_begin->getTimestamp(),
-                    'offset_end' => $offset_end->getTimestamp(),
-                    'date_begin' => $date_begin->getTimestamp(),
-                    'date_end' => $date_end->getTimestamp(),
-                    'total' => $total
-                )
+            'offset_begin' => $offset_begin->getTimestamp(),
+            'offset_end' => $offset_end->getTimestamp(),
+            'date_begin' => $date_begin->getTimestamp(),
+            'date_end' => $date_end->getTimestamp(),
+            'total' => $total
+        );
+
+        if(Yii::app()->request->isAjaxRequest){
+
+            self::ajaxResponse('ok','',
+                $data
             );
         }
         else{
-            return $reconf_array;
+            return $data;
         }
 
 
@@ -229,6 +222,71 @@ class SiteController extends Controller
 
             Yii::app()->db->createCommand("INSERT INTO purchases VALUES('$new_date','$pm_id','$price','$amount')")->query();
         }
+    }
+
+    public function actionGenerateFile(){
+
+        $date_begin = Yii::app()->request->getParam('date_begin') == NULL ? date('Y-m-d',0) : Yii::app()->request->getParam('date_begin') ;
+        $date_end = Yii::app()->request->getParam('date_end') == NULL ? date('Y-m-d') : Yii::app()->request->getParam('date_end');
+
+//        var_dump($date_begin);
+//        var_dump($date_end);
+//
+//        die;
+        $result = self::actionGetData(false,$date_begin,$date_end);
+
+        $date_begin = DateTime::createFromFormat('Y-m-d', $date_begin);
+        $date_end = DateTime::createFromFormat('Y-m-d', $date_end);
+
+        $date_begin_orig = clone($date_begin);
+
+        $dates = array();
+        $interv = new DateInterval('P1D');
+
+
+        while($date_begin <= $date_end){
+            $dates[] = $date_begin->format('d.m.Y');
+            $date_begin->add($interv);
+        }
+
+        $head = array('pm_id','price');
+
+        $head = array_merge($head,$dates);
+
+        $file_array =array();
+//        var_dump($result);
+        foreach($result['result'] as $pm_id => $prices){
+
+            foreach($prices as $price => $days)
+            {
+                $file_array[$pm_id.$price][] = $pm_id;
+                $file_array[$pm_id.$price][] = $price;
+                foreach($dates as $date){
+                    if(isset($days[$date]))
+                        $file_array[$pm_id.$price][] = $days[$date];
+                    else
+                        $file_array[$pm_id.$price][] = 0;
+                }
+            }
+        }
+
+        $filename = "report ".$date_begin_orig->format('Y-m-d')."-".$date_end->format('Y-m-d').".xls";
+
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header("Content-Type: application/vnd.ms-excel;");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        $out = fopen("php://output", 'w');
+        fputcsv($out, $head,"\t");
+        foreach ($file_array as $data)
+        {
+            fputcsv($out, $data,"\t");
+        }
+        fclose($out);
+
+//        var_dump($dates);
+//        var_dump($file_array);
+//        var_dump($file_array);
     }
 
     public function ajaxResponse($status,$message = null,$data = null){
