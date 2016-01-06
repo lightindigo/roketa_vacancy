@@ -37,8 +37,6 @@ $(function(){
         inputs: $('.input-daterange input')
     })
 
-    $('#result_table').tablesorter();
-
     $('.input-daterange').datepicker().on('changeDate',
         function(){
             new_cond.date_begin = $("#start_date").val();
@@ -299,6 +297,8 @@ function send_request(is_new_request){
             }
 
 
+            //-------------------------------------- вывод таблицы
+
 
             $('#table_head').html('');
             $('#result_table tbody').html('');
@@ -356,6 +356,6 @@ function send_request(is_new_request){
                     $resultTable.append(new_row);
                 }
             }
+            $('#result_table').tablesorter();
         })
-
 }
