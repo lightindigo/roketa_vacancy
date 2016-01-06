@@ -20,6 +20,25 @@ var current_cond = {
 };
 
 $(function(){
+    $('#date_begin .input-group.date,#date_end .input-group.date').datepicker({
+        language: "ru",
+        format: "dd.mm.yyyy",
+        todayBtn: true,
+        forceParse: false,
+        autoclose: true
+    });
+
+    $('.input-daterange').datepicker({
+        language: "ru",
+        keyboardNavigation: false,
+        autoclose: true,
+        forceParse:true,
+        todayHighlight: true,
+        inputs: $('.input-daterange input')
+    })
+
+    $('#result_table').tablesorter();
+
     $('.input-daterange').datepicker().on('changeDate',
         function(){
             new_cond.date_begin = $("#start_date").val();

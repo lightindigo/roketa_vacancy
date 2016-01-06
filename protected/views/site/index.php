@@ -22,6 +22,7 @@ $this->pageTitle=Yii::app()->name;
 <script src="<?php echo Yii::app()->request->baseUrl; ?>assets/bootstrap/js/bootstrap.min.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>assets/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>js/main.js"></script>
+<script src="<?php echo Yii::app()->request->baseUrl; ?>assets/jquery.tablesorter.min.js"></script>
 <script src="<?php echo Yii::app()->request->baseUrl; ?>assets/bootstrap-datepicker/locales/bootstrap-datepicker.ru.min.js"></script>
 <div class="row">
     <h1>Запросить данные</h1>
@@ -137,21 +138,5 @@ $this->pageTitle=Yii::app()->name;
     var vpage = 1;
     var hpage = 1;
 
-    $('#date_begin .input-group.date,#date_end .input-group.date').datepicker({
-        language: "ru",
-        format: "dd.mm.yyyy",
-        todayBtn: true,
-        forceParse: false,
-        autoclose: true
-    });
-
-    $('.input-daterange').datepicker({
-        language: "ru",
-        keyboardNavigation: false,
-        autoclose: true,
-        forceParse:true,
-        todayHighlight: true,
-        inputs: $('.input-daterange input')
-    })
 
 </script>
