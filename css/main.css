@@ -20,3 +20,10 @@ td.error{
     display: inline-block;
     margin-right: 5px;
 }
+
+.page_but.active{
+    font-size: 1.3em;
+    font-width: bold;
+    color:green;
+    text-decoration: underline;
+}

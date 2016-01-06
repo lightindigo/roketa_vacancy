@@ -93,7 +93,7 @@ $this->pageTitle=Yii::app()->name;
                 Страницы по товарам
             </td>
             <td id="pmpages">
-                <a class="page" href="#">1</a>
+
             </td>
         </tr>
         </tbody>

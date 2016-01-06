@@ -38,6 +38,7 @@ $(function(){
             $('#next_date').removeAttr('disabled');
             $('#next_date').removeClass('disabled');
         }
+        $('#datepages select option')[current_cond.hpage].selected=true
         send_request(false);
     });
     $('#next_date').on('click',function(){
@@ -50,6 +51,7 @@ $(function(){
             $('#next_date').attr('disabled', 'disabled');
             $('#next_date').addClass('disabled');
         }
+        $('#datepages select option')[current_cond.hpage].selected=true
         send_request(false);
     });
 
@@ -65,6 +67,10 @@ $(function(){
             $('#next_pm').removeClass('disabled');
         }
 
+        $('.page_but.active').removeClass('active');
+        $('.page_but[data-page='+current_cond.vpage+']').addClass('active');
+
+
         send_request(false);
     });
     $('#next_pm').on('click',function(){
@@ -78,6 +84,10 @@ $(function(){
             $('#next_pm').attr('disabled', 'disabled');
             $('#next_pm').addClass('disabled');
         }
+
+        $('.page_but.active').removeClass('active');
+        $('.page_but[data-page='+current_cond.vpage+']').addClass('active');
+
         send_request(false);
     });
 
@@ -210,13 +220,22 @@ function send_request(is_new_request){
                 $('#pmpages').html('');
 
                 for(var i = 0; i < pages; i++){
+
                     var new_link = $('<a>');
                     new_link.addClass('page_but');
+                    if(i == 0)
+                        new_link.addClass('active');
                     new_link.attr('href','#');
                     new_link.attr('data-page',i);
                     new_link.text(i+1);
+
+                    //вертикальный пагинатор
                     new_link.on('click',function(){
                         current_cond.vpage = $(this).attr('data-page');
+
+                        $('.page_but.active').removeClass('active');
+                        $(this).addClass('active');
+
                         send_request(false);
 
                         if(current_cond.vpage == 0) {
